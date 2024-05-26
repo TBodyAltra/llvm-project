@@ -1,5 +1,10 @@
 add_llvm_component_group(TINYGPU)
 
+set(LLVM_TARGET_DEFINITIONS TINYGPU.td)
+tablegen(LLVM TINYGPUGenRegisterInfo.inc -gen-register-info)
+tablegen(LLVM TINYGPUGenInstrInfo.inc -gen-instr-info)
+add_public_tablegen_target(TINYGPUCommonTableGen)
+
 add_llvm_target(TINYGPUCodeGen
   TINYGPUTargetMachine.cpp
 
