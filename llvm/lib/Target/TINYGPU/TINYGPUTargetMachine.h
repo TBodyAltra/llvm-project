@@ -13,12 +13,15 @@
 #ifndef LLVM_LIB_TARGET_TINYGPU_TINYGPUTARGETMACHINE_H
 #define LLVM_LIB_TARGET_TINYGPU_TINYGPUTARGETMACHINE_H
 
+#include "MCTargetDesc/TINYGPUMCTargetDesc.h"
+
 #include "llvm/CodeGen/SelectionDAGTargetInfo.h"
 #include "llvm/IR/DataLayout.h"
 #include "llvm/Target/TargetMachine.h"
 #include <optional>
 
 namespace llvm {
+
 class TINYGPUTargetMachine : public LLVMTargetMachine {
   std::unique_ptr<TargetLoweringObjectFile> TLOF;
 
@@ -35,7 +38,7 @@ public:
     return TLOF.get();
   }
 };
-Target &getTheTINYGPUTarget();
+
 } // namespace llvm
 
-#endif
+#endif // LLVM_LIB_TARGET_TINYGPU_TINYGPUTARGETMACHINE_H
