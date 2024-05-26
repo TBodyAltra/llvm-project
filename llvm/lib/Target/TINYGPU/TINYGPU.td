@@ -20,8 +20,6 @@ include "llvm/Target/Target.td"
 include "TINYGPURegisterInfo.td"
 include "TINYGPUInstrInfo.td"
 
-def TINYGPUInstrInfo : InstrInfo;
-
 //===--------------------------------------------------------------------------===//
 // TINYGPU processors supported
 //===--------------------------------------------------------------------------===//
@@ -32,6 +30,10 @@ def : ProcessorModel<"tg0", NoSchedModel, []>;
 // Define the TINYGPU target
 //===--------------------------------------------------------------------------===//
 
+def TINYGPUInstrInfo : InstrInfo;
+def TINYGPUAsmParser : AsmParser;
+
 def TINYGPU : Target {
   let InstructionSet = TINYGPUInstrInfo;
+  let AssemblyParsers = [TINYGPUAsmParser]
 }
