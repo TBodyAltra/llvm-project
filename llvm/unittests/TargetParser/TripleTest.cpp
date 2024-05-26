@@ -535,6 +535,24 @@ TEST(TripleTest, ParsedIDs) {
   EXPECT_EQ(Triple::Linux, T.getOS());
   EXPECT_EQ(Triple::UnknownEnvironment, T.getEnvironment());
 
+  T = Triple("tinygpu-unknown-linux");
+  EXPECT_EQ(Triple::tinygpu, T.getArch());
+  EXPECT_EQ(Triple::UnknownVendor, T.getVendor());
+  EXPECT_EQ(Triple::Linux, T.getOS());
+  EXPECT_EQ(Triple::UnknownEnvironment, T.getEnvironment());
+
+  T = Triple("tinygpu-unknown-freebsd");
+  EXPECT_EQ(Triple::tinygpu, T.getArch());
+  EXPECT_EQ(Triple::UnknownVendor, T.getVendor());
+  EXPECT_EQ(Triple::FreeBSD, T.getOS());
+  EXPECT_EQ(Triple::UnknownEnvironment, T.getEnvironment());
+
+  T = Triple("tinygpu-suse-linux");
+  EXPECT_EQ(Triple::tinygpu, T.getArch());
+  EXPECT_EQ(Triple::SUSE, T.getVendor());
+  EXPECT_EQ(Triple::Linux, T.getOS());
+  EXPECT_EQ(Triple::UnknownEnvironment, T.getEnvironment());
+
   T = Triple("armv7hl-suse-linux-gnueabi");
   EXPECT_EQ(Triple::arm, T.getArch());
   EXPECT_EQ(Triple::SUSE, T.getVendor());
@@ -1232,6 +1250,12 @@ TEST(TripleTest, BitWidthPredicates) {
   EXPECT_TRUE(T.isArch64Bit());
   EXPECT_TRUE(T.isRISCV());
 
+  T.setArch(Triple::tinygpu);
+  EXPECT_TRUE(T.isArch16Bit());
+  EXPECT_FALSE(T.isArch32Bit());
+  EXPECT_FALSE(T.isArch64Bit());
+  EXPECT_TRUE(T.isTINYGPU());
+
   T.setArch(Triple::csky);
   EXPECT_FALSE(T.isArch16Bit());
   EXPECT_TRUE(T.isArch32Bit());
@@ -1400,6 +1424,10 @@ TEST(TripleTest, BitWidthArchVariants) {
   T.setArch(Triple::riscv64);
   EXPECT_EQ(Triple::riscv32, T.get32BitArchVariant().getArch());
   EXPECT_EQ(Triple::riscv64, T.get64BitArchVariant().getArch());
+
+  T.setArch(Triple::tinygpu);
+  EXPECT_EQ(Triple::UnknownArch, T.get32BitArchVariant().getArch());
+  EXPECT_EQ(Triple::UnknownArch, T.get64BitArchVariant().getArch());
 
   T.setArch(Triple::csky);
   EXPECT_EQ(Triple::csky, T.get32BitArchVariant().getArch());

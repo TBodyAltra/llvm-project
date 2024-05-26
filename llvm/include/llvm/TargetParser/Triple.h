@@ -106,6 +106,7 @@ public:
     renderscript32, // 32-bit RenderScript
     renderscript64, // 64-bit RenderScript
     ve,             // NEC SX-Aurora Vector Engine
+    tinygpu,        // tiny gpu
     LastArchType = ve
   };
   enum SubArchType {
@@ -928,6 +929,9 @@ public:
 
   /// Tests whether the target is RISC-V (32- and 64-bit).
   bool isRISCV() const { return isRISCV32() || isRISCV64(); }
+
+  /// Tests whether the target is TINYGPU
+  bool isTINYGPU() const { return getArch() == Triple::tinygpu; }
 
   /// Tests whether the target is 32-bit SPARC (little and big endian).
   bool isSPARC32() const {

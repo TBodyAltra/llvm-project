@@ -77,6 +77,7 @@ StringRef Triple::getArchTypeName(ArchType Kind) {
   case tcele:          return "tcele";
   case thumb:          return "thumb";
   case thumbeb:        return "thumbeb";
+  case tinygpu:        return "tinygpu";
   case ve:             return "ve";
   case wasm32:         return "wasm32";
   case wasm64:         return "wasm64";
@@ -156,6 +157,8 @@ StringRef Triple::getArchTypePrefix(ArchType Kind) {
 
   case spirv32:
   case spirv64:     return "spirv";
+
+  case tinygpu:     return "tinygpu";
 
   case kalimba:     return "kalimba";
   case lanai:       return "lanai";
@@ -367,6 +370,7 @@ Triple::ArchType Triple::getArchTypeForLLVMName(StringRef Name) {
     .Case("tcele", tcele)
     .Case("thumb", thumb)
     .Case("thumbeb", thumbeb)
+    .Case("tinygpu", tinygpu)
     .Case("x86", x86)
     .Case("i386", x86)
     .Case("x86-64", x86_64)
@@ -510,6 +514,7 @@ static Triple::ArchType parseArch(StringRef ArchName) {
     .Cases("sparcv9", "sparc64", Triple::sparcv9)
     .Case("tce", Triple::tce)
     .Case("tcele", Triple::tcele)
+    .Case("tinygpu", Triple::tinygpu)
     .Case("xcore", Triple::xcore)
     .Case("nvptx", Triple::nvptx)
     .Case("nvptx64", Triple::nvptx64)
@@ -849,6 +854,7 @@ static Triple::ObjectFormatType getDefaultFormat(const Triple &T) {
   case Triple::tce:
   case Triple::tcele:
   case Triple::thumbeb:
+  case Triple::tinygpu:
   case Triple::ve:
   case Triple::xcore:
   case Triple::xtensa:
@@ -1394,6 +1400,9 @@ static unsigned getArchPointerBitWidth(llvm::Triple::ArchType Arch) {
   case llvm::Triple::UnknownArch:
     return 0;
 
+  case llvm::Triple::tinygpu:
+    return 8;
+
   case llvm::Triple::avr:
   case llvm::Triple::msp430:
     return 16;
@@ -1485,6 +1494,7 @@ Triple Triple::get32BitArchVariant() const {
   case Triple::bpfel:
   case Triple::msp430:
   case Triple::systemz:
+  case Triple::tinygpu:
   case Triple::ve:
     T.setArch(UnknownArch);
     break;
@@ -1573,6 +1583,7 @@ Triple Triple::get64BitArchVariant() const {
   case Triple::sparcel:
   case Triple::tce:
   case Triple::tcele:
+  case Triple::tinygpu:
   case Triple::xcore:
   case Triple::xtensa:
     T.setArch(UnknownArch);
@@ -1668,6 +1679,7 @@ Triple Triple::getBigEndianArchVariant() const {
   case Triple::spir:
   case Triple::spirv32:
   case Triple::spirv64:
+  case Triple::tinygpu:
   case Triple::wasm32:
   case Triple::wasm64:
   case Triple::x86:
@@ -1779,6 +1791,7 @@ bool Triple::isLittleEndian() const {
   case Triple::spirv64:
   case Triple::tcele:
   case Triple::thumb:
+  case Triple::tinygpu:
   case Triple::ve:
   case Triple::wasm32:
   case Triple::wasm64:
