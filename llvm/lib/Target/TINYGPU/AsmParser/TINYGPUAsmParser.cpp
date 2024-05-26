@@ -13,6 +13,7 @@
 #include "llvm/MC/MCContext.h"
 #include "llvm/MC/MCExpr.h"
 #include "llvm/MC/MCInst.h"
+#include "llvm/MC/MCInstrInfo.h"
 #include "llvm/MC/MCParser/MCAsmLexer.h"
 #include "llvm/MC/MCParser/MCParsedAsmOperand.h"
 #include "llvm/MC/MCParser/MCTargetAsmParser.h"
@@ -32,10 +33,13 @@ class TINYGPUAsmParser : public MCTargetAsmParser {
 
     bool MatchAndEmitInstruction(SMLoc IDLoc, unsigned &Opcode,
                                  OperandVector &Operand, MCStreamer &Out,
-                                 unint64_t &ErrorInfo,
+                                 uint64_t &ErrorInfo,
                                  bool MatchingInlineAsm) override;
 
-    bool ParseRegister(unsigned &RegNo, SMLoc &StartLoc, SMLoc &EndLoc) override;
+    bool parseRegister(MCRegister &RegNo, SMLoc &StartLoc, SMLoc &EndLoc) override;
+    OperandMatchResultTy tryParseRegister(MCRegister &RegNo, SMLoc &StartLoc,
+                                          SMLoc &EndLoc) override;
+    OperandMatchResultTy parseRegister(OperandVector &Operands);
 
     bool ParseInstruction(ParseInstructionInfo &Info, StringRef Name,
                           SMLoc NameLoc, OperandVector &Operands) override;
@@ -47,19 +51,18 @@ class TINYGPUAsmParser : public MCTargetAsmParser {
 #include "TINYGPUGenAsmMatcher.inc"
 
     OperandMatchResultTy parseImmediate(OperandVector &Operands);
-    OperandMatchResultTy parseRegister(OperandVector &Operands);
 
     bool parseOperand(OperandVector &Operands);
 
 public:
     enum TINYGPUMatchResultTy {
-        Match_Dummy = FIRST_TARGET_MATCH_RESULT_TY;
+        Match_Dummy = FIRST_TARGET_MATCH_RESULT_TY,
 #define GET_OPERAND_DIAGNOSTIC_TYPES
 #include "TINYGPUGenAsmMatcher.inc"
 #undef GET_OPERAND_DIAGNOSTIC_TYPES
     };
 
-    TINYGPUAsmParser(const MCSubtargetInfo &STI, MCAsmParser Parser,
+    TINYGPUAsmParser(const MCSubtargetInfo &STI, MCAsmParser &Parser,
                      const MCInstrInfo &MII, const MCTargetOptions &Options)
         : MCTargetAsmParser(Options, STI, MII) {
       setAvailableFeatures(ComputeAvailableFeatures(STI.getFeatureBits()));
@@ -88,7 +91,7 @@ struct TINYGPUOperand : public MCParsedAsmOperand {
         StringRef Tok;
         RegOp Reg;
         ImmOp Imm;
-    }
+    };
 
     TINYGPUOperand(KindTy K) : MCParsedAsmOperand(), Kind(K) {}
 
@@ -210,7 +213,25 @@ public:
 
 #define GET_REGISTER_MATCHER
 #define GET_MATCHER_IMPLEMENTATION
-#include "TINYGPUGemAsmMatcher.inc"
+#include "TINYGPUGenAsmMatcher.inc"
+
+OperandMatchResultTy TINYGPUAsmParser::parseRegister(OperandVector &Operands) {
+  SMLoc S = getLoc();
+  SMLoc E = SMLoc::getFromPointer(S.getPointer() - 1);
+
+  switch (getLexer().getKind()) {
+  default:
+    return MatchOperand_NoMatch;
+  case AsmToken::Identifier:
+    StringRef Name = getLexer().getTok().getIdentifier();
+    unsigned RegNo = MatchRegisterName(Name);
+    if (RegNo == 0)
+      return MatchOperand_NoMatch;
+    getLexer().Lex();
+    Operands.push_back(TINYGPUOperand::createReg(RegNo, S, E));
+  }
+  return MatchOperand_Success;
+}
 
 bool TINYGPUAsmParser::MatchAndEmitInstruction(SMLoc IDLoc, unsigned &Opcode,
                                                OperandVector &Operands,
@@ -243,47 +264,29 @@ bool TINYGPUAsmParser::MatchAndEmitInstruction(SMLoc IDLoc, unsigned &Opcode,
         }
         return Error(ErrorLoc, "invalid operand for instruction");
     case Match_InvalidUImm8:
-        SMLoc ErrorLoc = ((TINYGPUOperand &)*Operands[ErrorInfo].getStartLoc());
+        SMLoc ErrorLoc = ((TINYGPUOperand &)*Operands[ErrorInfo]).getStartLoc();
         return Error(ErrorLoc, "immediate must be an integer in the range [0, 255]");
     }
 
     llvm_unreachable("Unknown match type detected!");
 }
 
-bool TINYGPUAsmParser::ParseRegister(unsigned &RegNo, SMLoc &StartLoc, SMLoc &EndLoc) {
+bool TINYGPUAsmParser::parseRegister(MCRegister &RegNo, SMLoc &StartLoc, SMLoc &EndLoc) {
+    if (tryParseRegister(RegNo, StartLoc, EndLoc) != MatchOperand_Success)
+      return Error(StartLoc, "invalid register name");
+    return false;
+}
+
+OperandMatchResultTy TINYGPUAsmParser::tryParseRegister(MCRegister &RegNo, SMLoc &StartLoc, SMLoc &EndLoc) {
     const AsmToken &Tok = getParser().getTok();
     StartLoc = Tok.getLoc();
     EndLoc = Tok.getEndLoc();
     RegNo = 0;
     StringRef Name = getLexer().getTok().getIdentifier();
-
-    if (!MatchRegisterName(Name) || !MatchRegisterAltName(Name)) {
-        getParser().Lex(); // Eat identifier token.
-        return false;
-    }
-
-    return Error(StartLoc, "invalid register name");
-}
-
-OperandMatchResultTy TINYGPUAsmParser::parseRegister(OperandVector &Operands) {
-  SMLoc S = getLoc();
-  SMLoc E = SMLoc::getFromPointer(S.getPointer() - 1);
-
-  switch (getLexer().getKind()) {
-  default:
-    return MatchOperand_NoMatch;
-  case AsmToken::Identifier:
-    StringRef Name = getLexer().getTok().getIdentifier();
-    unsigned RegNo = MatchRegisterName(Name);
-    if (RegNo == 0) {
-      RegNo = MatchRegisterAltName(Name);
-      if (RegNo == 0)
+    if (!MatchRegisterName(Name))
         return MatchOperand_NoMatch;
-    }
-    getLexer().Lex();
-    Operands.push_back(TINYGPUOperand::createReg(RegNo, S, E));
-  }
-  return MatchOperand_Success;
+    getParser().Lex(); // Eat identifier token.
+    return MatchOperand_Success;
 }
 
 OperandMatchResultTy TINYGPUAsmParser::parseImmediate(OperandVector &Operands) {

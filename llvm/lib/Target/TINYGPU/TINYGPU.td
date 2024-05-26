@@ -35,5 +35,5 @@ def TINYGPUAsmParser : AsmParser;
 
 def TINYGPU : Target {
   let InstructionSet = TINYGPUInstrInfo;
-  let AssemblyParsers = [TINYGPUAsmParser]
+  let AssemblyParsers = [TINYGPUAsmParser];
 }

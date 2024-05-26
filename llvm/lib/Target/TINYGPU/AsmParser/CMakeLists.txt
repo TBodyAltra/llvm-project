@@ -7,6 +7,7 @@ add_llvm_component_library(LLVMTINYGPUAsmParser
     TINYGPUDesc
     TINYGPUInfo
     Support
+    TargetParser
 
     ADD_TO_COMPONENT
     TINYGPU

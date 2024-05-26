@@ -12,6 +12,7 @@
 //===----------------------------------------------------------------------------------===//
 
 #include "TINYGPUMCTargetDesc.h"
+#include "InstPrinter/TINYGPUInstPrinter.h"
 #include "TINYGPUMCAsmInfo.h"
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/MC/MCAsmInfo.h"
@@ -49,6 +50,14 @@ static MCAsmInfo *createTINYGPUMCAsmInfo(const MCRegisterInfo &MRI,
     return new TINYGPUMCAsmInfo(TT);
 }
 
+static MCInstPrinter *createTINYGPUMCInstPrinter(const Triple &T,
+                                                 unsigned SyntaxVariant,
+                                                 const MCAsmInfo &MAI,
+                                                 const MCInstrInfo &MII,
+                                                 const MCRegisterInfo &MRI) {
+    return new TINYGPUInstPrinter(MAI, MII, MRI);
+}
+
 extern "C" void LLVMInitializeTINYGPUTargetMC() {
     Target *T = &getTheTINYGPUTarget();
     TargetRegistry::RegisterMCAsmInfo(*T, createTINYGPUMCAsmInfo);
@@ -56,4 +65,5 @@ extern "C" void LLVMInitializeTINYGPUTargetMC() {
     TargetRegistry::RegisterMCRegInfo(*T, createTINYGPUMCRegisterInfo);
     TargetRegistry::RegisterMCAsmBackend(*T, createTINYGPUAsmBackend);
     TargetRegistry::RegisterMCCodeEmitter(*T, createTINYGPUMCCodeEmitter);
+    TargetRegistry::RegisterMCInstPrinter(*T, createTINYGPUMCInstPrinter);
 }

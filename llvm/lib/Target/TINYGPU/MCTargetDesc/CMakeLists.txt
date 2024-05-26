@@ -8,6 +8,7 @@ add_llvm_component_library(LLVMTINYGPUDesc
   LINK_COMPONENTS
   MC
   TINYGPUInfo
+  TINYGPUAsmPrinter
   Support
    
   ADD_TO_COMPONENT
