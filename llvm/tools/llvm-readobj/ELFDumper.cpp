@@ -1254,6 +1254,7 @@ const EnumEntry<unsigned> ElfMachineType[] = {
   ENUM_ENT(EM_56800EX,       "EM_56800EX"),
   ENUM_ENT(EM_AMDGPU,        "EM_AMDGPU"),
   ENUM_ENT(EM_RISCV,         "RISC-V"),
+  ENUM_ENT(EM_TINYGPU,       "TINYGPU"),
   ENUM_ENT(EM_LANAI,         "EM_LANAI"),
   ENUM_ENT(EM_BPF,           "EM_BPF"),
   ENUM_ENT(EM_VE,            "NEC SX-Aurora Vector Engine"),
@@ -1687,6 +1688,11 @@ const EnumEntry<unsigned> ElfHeaderRISCVFlags[] = {
   ENUM_ENT(EF_RISCV_RVE, "RVE"),
   ENUM_ENT(EF_RISCV_TSO, "TSO"),
 };
+
+/*
+const EnumEntry<unsigned> ElfHeaderTINYGPUFlags[] = {
+};
+*/
 
 const EnumEntry<unsigned> ElfHeaderAVRFlags[] = {
   LLVM_READOBJ_ENUM_ENT(ELF, EF_AVR_ARCH_AVR1),
@@ -3589,6 +3595,10 @@ template <class ELFT> void GNUELFDumper<ELFT>::printFileHeaders() {
         unsigned(ELF::EF_MIPS_ABI), unsigned(ELF::EF_MIPS_MACH));
   else if (e.e_machine == EM_RISCV)
     ElfFlags = printFlags(e.e_flags, ArrayRef(ElfHeaderRISCVFlags));
+  /*
+  else if (e.e_machine == EM_TINYGPU)
+    ElfFlags = printFlags(e.e_flags, ArrayRef(ElfHeaderTINYGPUFlags));
+  */
   else if (e.e_machine == EM_AVR)
     ElfFlags = printFlags(e.e_flags, ArrayRef(ElfHeaderAVRFlags),
                           unsigned(ELF::EF_AVR_ARCH_MASK));
