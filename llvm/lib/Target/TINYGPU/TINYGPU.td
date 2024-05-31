@@ -24,7 +24,7 @@ include "TINYGPUInstrInfo.td"
 // TINYGPU processors supported
 //===--------------------------------------------------------------------------===//
 
-def : ProcessorModel<"tg0", NoSchedModel, []>;
+def : ProcessorModel<"tinygpu-naive", NoSchedModel, []>;
 
 //===--------------------------------------------------------------------------===//
 // Define the TINYGPU target

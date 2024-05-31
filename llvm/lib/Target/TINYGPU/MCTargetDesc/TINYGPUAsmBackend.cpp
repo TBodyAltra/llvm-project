@@ -20,6 +20,7 @@
 #include "llvm/MC/MCSymbol.h"
 #include "llvm/Support/ErrorHandling.h"
 #include "llvm/Support/raw_ostream.h"
+#include "llvm/Support/EndianStream.h"
 
 using namespace llvm;
 
@@ -58,8 +59,20 @@ public:
 };
 
 bool TINYGPUAsmBackend::writeNopData(raw_ostream &OS, uint64_t Count, const MCSubtargetInfo *STI) const {
-  // TODO: what does this do?
-  report_fatal_error("TINYGPUAsmBackend::writeNopData() unimplemented.");
+  // If the count is not 2-byte aligned, we must be writing data into the text
+  // section (otherwise we have unaligned instructions, and thus have far
+  // bigger problems), so just write zeros instead.
+  OS.write_zeros(Count % 2);
+
+  // We are properly aligned, so write NOPs as requested.
+  Count /= 2;
+
+  const uint16_t Encoded_NOP = 0x0;
+
+  for (uint64_t I = 0; I != Count; ++I)
+    support::endian::write<uint16_t>(OS, Encoded_NOP, Endian);
+
+  return true;
 }
 
 void TINYGPUAsmBackend::applyFixup(const MCAssembler &Asm, const MCFixup &Fixup,

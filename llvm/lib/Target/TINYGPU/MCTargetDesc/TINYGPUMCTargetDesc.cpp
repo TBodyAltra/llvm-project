@@ -58,6 +58,16 @@ static MCInstPrinter *createTINYGPUMCInstPrinter(const Triple &T,
     return new TINYGPUInstPrinter(MAI, MII, MRI);
 }
 
+#define GET_SUBTARGETINFO_MC_DESC
+#include "TINYGPUGenSubtargetInfo.inc"
+
+static MCSubtargetInfo *createTINYGPUMCSubtargetInfo(const Triple &TT,
+                                                     StringRef CPU, StringRef FS) {
+    if (CPU.empty() || CPU == "naive")
+        CPU = "tinygpu-naive";
+    return createTINYGPUMCSubtargetInfoImpl(TT, CPU, /*TuneCPU*/CPU, FS);
+}
+
 extern "C" void LLVMInitializeTINYGPUTargetMC() {
     Target *T = &getTheTINYGPUTarget();
     TargetRegistry::RegisterMCAsmInfo(*T, createTINYGPUMCAsmInfo);
@@ -66,4 +76,5 @@ extern "C" void LLVMInitializeTINYGPUTargetMC() {
     TargetRegistry::RegisterMCAsmBackend(*T, createTINYGPUAsmBackend);
     TargetRegistry::RegisterMCCodeEmitter(*T, createTINYGPUMCCodeEmitter);
     TargetRegistry::RegisterMCInstPrinter(*T, createTINYGPUMCInstPrinter);
+    TargetRegistry::RegisterMCSubtargetInfo(*T, createTINYGPUMCSubtargetInfo);
 }

@@ -6,6 +6,7 @@ tablegen(LLVM TINYGPUGenInstrInfo.inc -gen-instr-info)
 tablegen(LLVM TINYGPUGenMCCodeEmitter.inc -gen-emitter)
 tablegen(LLVM TINYGPUGenAsmMatcher.inc -gen-asm-matcher)
 tablegen(LLVM TINYGPUGenAsmWriter.inc -gen-asm-writer)
+tablegen(LLVM TINYGPUGenSubtargetInfo.inc -gen-subtarget)
 add_public_tablegen_target(TINYGPUCommonTableGen)
 
 add_llvm_target(TINYGPUCodeGen
