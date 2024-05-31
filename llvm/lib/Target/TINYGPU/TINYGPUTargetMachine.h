@@ -14,7 +14,7 @@
 #define LLVM_LIB_TARGET_TINYGPU_TINYGPUTARGETMACHINE_H
 
 #include "MCTargetDesc/TINYGPUMCTargetDesc.h"
-
+#include "TINYGPUSubtarget.h"
 #include "llvm/CodeGen/SelectionDAGTargetInfo.h"
 #include "llvm/IR/DataLayout.h"
 #include "llvm/Target/TargetMachine.h"
@@ -24,6 +24,7 @@ namespace llvm {
 
 class TINYGPUTargetMachine : public LLVMTargetMachine {
   std::unique_ptr<TargetLoweringObjectFile> TLOF;
+  TINYGPUSubtarget Subtarget;
 
 public:
   TINYGPUTargetMachine(const Target &T, const Triple &TT, StringRef CPU,
@@ -31,6 +32,10 @@ public:
                        std::optional<Reloc::Model> RM,
                        std::optional<CodeModel::Model> CM, CodeGenOpt::Level OL,
                        bool JIT);
+
+  const TINYGPUSubtarget *getSubtargetImpl(const Function &) const override {
+    return &Subtarget;
+  }
 
   TargetPassConfig *createPassConfig(PassManagerBase &PM) override;
 

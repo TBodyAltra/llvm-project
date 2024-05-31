@@ -127,7 +127,7 @@ public:
         return static_cast<const MCConstantExpr *>(Val)->getValue();
     }
 
-    bool isUImm8() const {
+    bool isImm8() const {
         return (isConstantImm() && isInt<8>(getConstantImm()));
     }
 
@@ -266,7 +266,7 @@ bool TINYGPUAsmParser::MatchAndEmitInstruction(SMLoc IDLoc, unsigned &Opcode,
                 ErrorLoc = IDLoc;
         }
         return Error(ErrorLoc, "invalid operand for instruction");
-    case Match_InvalidUImm8:
+    case Match_InvalidImm8:
         SMLoc ErrorLoc = ((TINYGPUOperand &)*Operands[ErrorInfo]).getStartLoc();
         return Error(ErrorLoc, "immediate must be an integer in the range [0, 255]");
     }

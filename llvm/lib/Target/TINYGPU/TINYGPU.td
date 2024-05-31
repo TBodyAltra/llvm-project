@@ -14,11 +14,12 @@ include "llvm/Target/Target.td"
 
 
 //===--------------------------------------------------------------------------===//
-// Register File, instruction descriptions
+// Register File, instruction descriptions, calling conventions
 //===--------------------------------------------------------------------------===//
 
 include "TINYGPURegisterInfo.td"
 include "TINYGPUInstrInfo.td"
+include "TINYGPUCallingConv.td"
 
 //===--------------------------------------------------------------------------===//
 // TINYGPU processors supported
@@ -30,7 +31,10 @@ def : ProcessorModel<"tinygpu-naive", NoSchedModel, []>;
 // Define the TINYGPU target
 //===--------------------------------------------------------------------------===//
 
-def TINYGPUInstrInfo : InstrInfo;
+def TINYGPUInstrInfo : InstrInfo {
+  let guessInstructionProperties = 0;
+}
+
 def TINYGPUAsmParser : AsmParser {
     let ShouldEmitMatchRegisterAltName = 1;
 }

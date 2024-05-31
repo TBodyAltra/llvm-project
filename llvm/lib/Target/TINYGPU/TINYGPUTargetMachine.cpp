@@ -44,10 +44,31 @@ TINYGPUTargetMachine::TINYGPUTargetMachine(const Target &T, const Triple &TT,
     : LLVMTargetMachine(T, computeDataLayout(TT), TT, CPU, FS, Options,
                         getEffectiveRelocModel(TT, RM),
                         getEffectiveCodeModel(CM, CodeModel::Small), OL),
-      TLOF(std::make_unique<TargetLoweringObjectFileELF>()) {
+      TLOF(std::make_unique<TargetLoweringObjectFileELF>()),
+      Subtarget(TT, CPU, FS, *this) {
   initAsmInfo();
 }
 
+namespace {
+class TINYGPUPassConfig : public TargetPassConfig {
+public:
+  TINYGPUPassConfig(TINYGPUTargetMachine &TM, PassManagerBase &PM)
+      : TargetPassConfig(TM, PM) {}
+
+  TINYGPUTargetMachine &getTINYGPUTargetMachine() const {
+    return getTM<TINYGPUTargetMachine>();
+  }
+
+  bool addInstSelector() override;
+};
+}
+
 TargetPassConfig *TINYGPUTargetMachine::createPassConfig(PassManagerBase &PM) {
-  return new TargetPassConfig(*this, PM);
+  return new TINYGPUPassConfig(*this, PM);
+}
+
+bool TINYGPUPassConfig::addInstSelector() {
+  addPass(createTINYGPUISelDag(getTINYGPUTargetMachine()));
+
+  return false;
 }
