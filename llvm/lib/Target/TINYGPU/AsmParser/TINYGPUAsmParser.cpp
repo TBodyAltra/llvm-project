@@ -219,12 +219,15 @@ OperandMatchResultTy TINYGPUAsmParser::parseRegister(OperandVector &Operands) {
   SMLoc S = getLoc();
   SMLoc E = SMLoc::getFromPointer(S.getPointer() - 1);
 
+  if (getLexer().getKind() == AsmToken::Percent)
+    getLexer().Lex(); // eat "%"
+
   switch (getLexer().getKind()) {
   default:
     return MatchOperand_NoMatch;
   case AsmToken::Identifier:
     StringRef Name = getLexer().getTok().getIdentifier();
-    unsigned RegNo = MatchRegisterName(Name);
+    unsigned RegNo = MatchRegisterName(Name) || MatchRegisterAltName(Name);
     if (RegNo == 0)
       return MatchOperand_NoMatch;
     getLexer().Lex();
@@ -283,7 +286,7 @@ OperandMatchResultTy TINYGPUAsmParser::tryParseRegister(MCRegister &RegNo, SMLoc
     EndLoc = Tok.getEndLoc();
     RegNo = 0;
     StringRef Name = getLexer().getTok().getIdentifier();
-    if (!MatchRegisterName(Name))
+    if (!MatchRegisterName(Name) || !MatchRegisterAltName(Name))
         return MatchOperand_NoMatch;
     getParser().Lex(); // Eat identifier token.
     return MatchOperand_Success;

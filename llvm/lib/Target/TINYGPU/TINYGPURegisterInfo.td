@@ -18,6 +18,9 @@ class TINYGPUReg<bits<4> Enc, string n, list<string> alt = []> : Register<n> {
 }
 } // namespace TINYGPU
 
+let FallbackRegAltNameIndex = NoRegAltName in
+def ABIRegAltNameIndex : RegAltNameIndex;
+
 let RegAltNameIndices = [NoRegAltName] in {
   def R0  : TINYGPUReg<0, "R0">, DwarfRegNum<[0]>;
   def R1  : TINYGPUReg<1, "R1">, DwarfRegNum<[1]>;
@@ -32,9 +35,12 @@ let RegAltNameIndices = [NoRegAltName] in {
   def R10 : TINYGPUReg<1, "R10">, DwarfRegNum<[10]>;
   def R11 : TINYGPUReg<1, "R11">, DwarfRegNum<[11]>;
   def R12 : TINYGPUReg<1, "R12">, DwarfRegNum<[12]>;
-  def R13 : TINYGPUReg<1, "R13">, DwarfRegNum<[13]>;
-  def R14 : TINYGPUReg<1, "R14">, DwarfRegNum<[14]>;
-  def R15 : TINYGPUReg<1, "R15">, DwarfRegNum<[15]>;
+}
+
+let RegAltNameIndices = [ABIRegAltNameIndex] in {
+  def R13 : TINYGPUReg<1, "R13", ["blockIdx"]>, DwarfRegNum<[13]>;
+  def R14 : TINYGPUReg<1, "R14", ["blockDim"]>, DwarfRegNum<[14]>;
+  def R15 : TINYGPUReg<1, "R15", ["threadIdx"]>, DwarfRegNum<[15]>;
 }
 
 def GPR : RegisterClass<"TINYGPU", [i8], 8, (add (sequence "R%u", 0, 15))> {

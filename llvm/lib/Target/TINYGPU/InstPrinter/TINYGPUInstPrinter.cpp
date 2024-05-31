@@ -33,7 +33,7 @@ void TINYGPUInstPrinter::printInst(const MCInst *MI, uint64_t Address,
 }
 
 void TINYGPUInstPrinter::printRegName(raw_ostream &O, MCRegister RegNo) const {
-  O << getRegisterName(RegNo);
+  O << getRegisterName(RegNo, TINYGPU::ABIRegAltNameIndex);
 }
 
 void TINYGPUInstPrinter::printOperand(const MCInst *MI, unsigned OpNo,

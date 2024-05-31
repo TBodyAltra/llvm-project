@@ -31,7 +31,9 @@ def : ProcessorModel<"tinygpu-naive", NoSchedModel, []>;
 //===--------------------------------------------------------------------------===//
 
 def TINYGPUInstrInfo : InstrInfo;
-def TINYGPUAsmParser : AsmParser;
+def TINYGPUAsmParser : AsmParser {
+    let ShouldEmitMatchRegisterAltName = 1;
+}
 
 def TINYGPU : Target {
   let InstructionSet = TINYGPUInstrInfo;

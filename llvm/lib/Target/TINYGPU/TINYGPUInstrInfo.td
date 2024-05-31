@@ -44,7 +44,7 @@ def ADD   : ALU_B<OPC_ADD, "ADD">;
 def SUB   : ALU_B<OPC_SUB, "SUB">;
 def MUL   : ALU_B<OPC_MUL, "MUL">;
 def DIV   : ALU_B<OPC_DIV, "DIV">;
-def LDR   : TGInstU<OPC_LDR, (outs GPR:$rd), (ins GPR:$rs), "LDR", "$rd, %rs">;
+def LDR   : TGInstU<OPC_LDR, (outs GPR:$rd), (ins GPR:$rs), "LDR", "$rd, $rs">;
 def STR   : TGInstC<OPC_STR, (outs), (ins GPR:$rs, GPR:$rt), "STR", "$rs, $rt">;
 def CONST : TGInstCon<OPC_CONST, (outs GPR:$rd), (ins uimm8:$imm8), "CONST", "$rd, $imm8">;
 def RET   : TGInstR<OPC_RET, (outs), (ins), "RET", "">;
