@@ -555,6 +555,7 @@ def get_run_handler(triple):
         "nvptx": (scrub_asm_nvptx, ASM_FUNCTION_NVPTX_RE),
         "loongarch32": (scrub_asm_loongarch, ASM_FUNCTION_LOONGARCH_RE),
         "loongarch64": (scrub_asm_loongarch, ASM_FUNCTION_LOONGARCH_RE),
+        "tinygpu": (scrub_asm_x86, ASM_FUNCTION_X86_RE),
     }
     handler = None
     best_prefix = ""

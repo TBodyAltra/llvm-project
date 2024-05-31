@@ -72,6 +72,7 @@ def STR   : TGInstC<OPC_STR, (outs), (ins GPR:$rs, GPR:$rt), "STR", "$rs, $rt">;
 // DAG selection patterns
 //===----------------------------------------------------------------------===//
 def DAG_RET: Pat<(TINYGPUendpgm), (RET)>;
-def DAG_ADDi: Pat<(add GPR:$rs, imm:$imm), (ADD $rs, (CONST $imm))>;
-//def DAG_ADD: Pat<(add GPR:$rs, GPR:$rt), (ADD $rs, $rt)>;
-//def DAG_CONST: Pat<(imm:$imm), (CONST $imm)>;
+def DAG_ADD: Pat<(add GPR:$rs, GPR:$rt), (ADD $rs, $rt)>;
+def DAG_SUB: Pat<(sub GPR:$rs, GPR:$rt), (SUB $rs, $rt)>;
+def DAG_MUL: Pat<(mul GPR:$rs, GPR:$rt), (MUL $rs, $rt)>;
+def DAG_SDIV: Pat<(sdiv GPR:$rs, GPR:$rt), (DIV $rs, $rt)>;
