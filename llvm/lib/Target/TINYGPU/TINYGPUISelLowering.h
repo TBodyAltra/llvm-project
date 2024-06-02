@@ -41,6 +41,14 @@ public:
   // This method returns the name of a target specific DAG node.
   const char *getTargetNodeName(unsigned Opcode) const override;
 
+  /// Return true if integer divide is usually cheaper than a sequence of
+  /// several shifts, adds, and multiplies for this target.
+  /// The definition of "cheaper" may depend on whether we're optimizing
+  /// for speed or for size.
+  /// For TINYGPU, does not support mulhs op and shift op, for now
+  /// So always keep the div op for TINYGPU
+  bool isIntDivCheap(EVT VT, AttributeList Attr) const override { return true; }
+
 private:
   // Lower incoming arguments, copy physregs into vregs
   SDValue LowerFormalArguments(SDValue Chain, CallingConv::ID CallConv,
