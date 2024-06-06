@@ -29,3 +29,14 @@
 using namespace llvm;
 
 TINYGPUInstrInfo::TINYGPUInstrInfo() : TINYGPUGenInstrInfo() {}
+
+void TINYGPUInstrInfo::copyPhysReg(MachineBasicBlock &MBB,
+                                   MachineBasicBlock::iterator MI, const DebugLoc &DL,
+                                   MCRegister DestReg, MCRegister SrcReg,
+                                   bool KillSrc) const {
+    BuildMI(MBB, MI, DL, get(TINYGPU::CONST), DestReg)
+        .addImm(0);
+    BuildMI(MBB, MI, DL, get(TINYGPU::ADD), DestReg)
+        .addReg(SrcReg, getKillRegState(KillSrc))
+        .addReg(DestReg, getKillRegState(false));
+}

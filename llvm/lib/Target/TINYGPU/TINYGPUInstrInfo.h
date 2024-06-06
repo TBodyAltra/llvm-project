@@ -26,6 +26,11 @@ class TINYGPUInstrInfo : public TINYGPUGenInstrInfo {
 
 public:
   TINYGPUInstrInfo();
+  void copyPhysReg(MachineBasicBlock &MBB,
+                   MachineBasicBlock::iterator MI, const DebugLoc &DL,
+                   MCRegister DestReg, MCRegister SrcReg,
+                   bool KillSrc) const override;
+ 
 };
 }
 
