@@ -35,7 +35,7 @@ public:
     return "TINYGPU DAG->DAG Pattern Instruction Selection";
   }
 
-  MachineSDNode *buildMovImm8(SDLoc &DL, uint8_t Imm, EVT VT) const;
+  MachineSDNode *buildMovImm8(SDLoc &DL, uint8_t Imm) const;
 
   void Select(SDNode *Node) override;
 
@@ -57,19 +57,33 @@ void TINYGPUDAGToDAGISel::Select(SDNode *Node) {
   default:
     break;
   case ISD::Constant:
+  {
     uint8_t Imm;
     ConstantSDNode *C = cast<ConstantSDNode>(Node);
     Imm = C->getZExtValue();
     SDLoc DL(Node);
-    ReplaceNode(Node, buildMovImm8(DL, Imm, Node->getValueType(0)));
+    ReplaceNode(Node, buildMovImm8(DL, Imm));
     return;
+  }
+  case ISD::SHL:
+  {
+    uint8_t Imm;
+    ConstantSDNode *RHS = dyn_cast<ConstantSDNode>(Node->getOperand(1));
+    Imm = 1 << (RHS->getZExtValue());
+    SDLoc DL(Node);
+    auto *NewRHS = buildMovImm8(DL, Imm);
+    SDValue LHS = Node->getOperand(0);
+    auto *N = CurDAG->getMachineNode(TINYGPU::MUL, DL, MVT::i8, LHS, SDValue(NewRHS, 0));
+    ReplaceNode(Node, N);
+    return;
+  }
   }
 
   // Select the default instruction.
   SelectCode(Node);
 }
 
-MachineSDNode *TINYGPUDAGToDAGISel::buildMovImm8(SDLoc &DL, uint8_t Imm, EVT Vt) const {
+MachineSDNode *TINYGPUDAGToDAGISel::buildMovImm8(SDLoc &DL, uint8_t Imm) const {
   auto *N = CurDAG->getMachineNode(
     TINYGPU::CONST, DL, MVT::i8,
     CurDAG->getTargetConstant(Imm & 0xFFFF, DL, MVT::i8)
