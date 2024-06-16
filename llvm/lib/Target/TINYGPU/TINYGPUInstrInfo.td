@@ -50,8 +50,18 @@ def DIV   : ALU_B<OPC_DIV, "DIV">;
 
 let hasSideEffects = 0, mayLoad = 0, mayStore = 0 in {
 def NOP   : TGInstR<OPC_NOP, (outs), (ins), "NOP", "">;
-def BRnzp : TGInstBr<OPC_BR_NZP, (outs), (ins GPR:$nzp, imm8:$imm8), "BRnzp", "$imm8">;
+}
+
+let hasSideEffects = 1, mayLoad = 0, mayStore = 0 in {
 def CMP   : TGInstC<OPC_CMP, (outs), (ins GPR:$rs, GPR:$rt), "CMP", "$rs, $rt">;
+}
+
+let isBranch = 1, hasSideEffects = 0, mayLoad = 0, mayStore = 0, isTerminator = 1 in {
+def BRnzp : TGInstBr<OPC_BR_NZP, (outs), (ins imm8:$imm8), "BRnzp",  "$imm8"> { let nzp = 7; }
+def BRnp  : TGInstBr<OPC_BR_NZP, (outs), (ins imm8:$imm8), "BRnp",  "$imm8"> { let nzp = 5; }
+def BRn   : TGInstBr<OPC_BR_NZP, (outs), (ins imm8:$imm8), "BRn", "$imm8"> { let nzp = 4; }
+def BRz   : TGInstBr<OPC_BR_NZP, (outs), (ins imm8:$imm8), "BRz", "$imm8"> { let nzp = 2; }
+def BRp   : TGInstBr<OPC_BR_NZP, (outs), (ins imm8:$imm8), "BRp", "$imm8"> { let nzp = 1; }
 }
 
 let hasSideEffects = 0, mayLoad = 0, mayStore = 0, isMoveImm = 1 in {
@@ -71,8 +81,10 @@ def STR   : TGInstC<OPC_STR, (outs), (ins GPR:$rs, GPR:$rt), "STR", "$rs, $rt">;
 //===----------------------------------------------------------------------===//
 // DAG selection patterns
 //===----------------------------------------------------------------------===//
-def DAG_RET: Pat<(TINYGPUendpgm), (RET)>;
-def DAG_ADD: Pat<(add GPR:$rs, GPR:$rt), (ADD $rs, $rt)>;
-def DAG_SUB: Pat<(sub GPR:$rs, GPR:$rt), (SUB $rs, $rt)>;
-def DAG_MUL: Pat<(mul GPR:$rs, GPR:$rt), (MUL $rs, $rt)>;
+def DAG_RET : Pat<(TINYGPUendpgm), (RET)>;
+def DAG_ADD : Pat<(add GPR:$rs, GPR:$rt), (ADD $rs, $rt)>;
+def DAG_SUB : Pat<(sub GPR:$rs, GPR:$rt), (SUB $rs, $rt)>;
+def DAG_MUL : Pat<(mul GPR:$rs, GPR:$rt), (MUL $rs, $rt)>;
 def DAG_SDIV: Pat<(sdiv GPR:$rs, GPR:$rt), (DIV $rs, $rt)>;
+def DAG_LDR : Pat<(ld GPR:$rs), (LDR $rs)>;
+def DAG_STR : Pat<(st GPR:$rs, GPR:$rt), (STR $rs, $rt)>;

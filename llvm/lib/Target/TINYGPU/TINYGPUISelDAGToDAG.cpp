@@ -35,7 +35,7 @@ public:
     return "TINYGPU DAG->DAG Pattern Instruction Selection";
   }
 
-  MachineSDNode *buildMovImm8(SDLoc &DL, uint8_t Imm) const;
+  MachineSDNode *buildMovImm8(const SDLoc &DL, uint8_t Imm) const;
 
   void Select(SDNode *Node) override;
 
@@ -61,8 +61,7 @@ void TINYGPUDAGToDAGISel::Select(SDNode *Node) {
     uint8_t Imm;
     ConstantSDNode *C = cast<ConstantSDNode>(Node);
     Imm = C->getZExtValue();
-    SDLoc DL(Node);
-    ReplaceNode(Node, buildMovImm8(DL, Imm));
+    ReplaceNode(Node, buildMovImm8(SDLoc(Node), Imm));
     return;
   }
   case ISD::SHL:
@@ -77,13 +76,31 @@ void TINYGPUDAGToDAGISel::Select(SDNode *Node) {
     ReplaceNode(Node, N);
     return;
   }
+  case ISD::BR:
+  {
+    auto *N = CurDAG->getMachineNode(TINYGPU::BRnzp, SDLoc(Node), MVT::Other, Node->getOperand(1), Node->getOperand(0));
+    ReplaceNode(Node, N);
+    return;
+  }
+  case ISD::BR_CC:
+  {
+    auto *CC = dyn_cast<CondCodeSDNode>(Node->getOperand(1));
+    if (CC->get() == ISD::CondCode::SETNE) {
+      auto *NZP = CurDAG->getMachineNode(TINYGPU::CMP, SDLoc(Node), MVT::Other, 
+                                         Node->getOperand(2), Node->getOperand(3));
+      auto *N = CurDAG->getMachineNode(TINYGPU::BRnp, SDLoc(Node), MVT::Other, Node->getOperand(4), SDValue(NZP, 0));
+      ReplaceNode(Node, N);
+      return;
+    }
+    return;
+  }
   }
 
   // Select the default instruction.
   SelectCode(Node);
 }
 
-MachineSDNode *TINYGPUDAGToDAGISel::buildMovImm8(SDLoc &DL, uint8_t Imm) const {
+MachineSDNode *TINYGPUDAGToDAGISel::buildMovImm8(const SDLoc &DL, uint8_t Imm) const {
   auto *N = CurDAG->getMachineNode(
     TINYGPU::CONST, DL, MVT::i8,
     CurDAG->getTargetConstant(Imm & 0xFFFF, DL, MVT::i8)

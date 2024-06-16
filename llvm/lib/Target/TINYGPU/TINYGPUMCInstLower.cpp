@@ -14,6 +14,7 @@
 
 #include "TINYGPU.h"
 #include "llvm/CodeGen/MachineBasicBlock.h"
+#include "llvm/CodeGen/MachineFunction.h"
 #include "llvm/CodeGen/MachineInstr.h"
 #include "llvm/MC/MCAsmInfo.h"
 #include "llvm/MC/MCContext.h"
@@ -24,8 +25,7 @@
 
 using namespace llvm;
 
-void llvm::LowerTINYGPUMachineInstrToMCInst(const MachineInstr *MI,
-                                          MCInst &OutMI) {
+void llvm::LowerTINYGPUMachineInstrToMCInst(const MachineInstr *MI, MCInst &OutMI) {
   OutMI.setOpcode(MI->getOpcode());
 
   for (const MachineOperand &MO : MI->operands()) {
@@ -42,6 +42,10 @@ void llvm::LowerTINYGPUMachineInstrToMCInst(const MachineInstr *MI,
       break;
     case MachineOperand::MO_Immediate:
       MCOp = MCOperand::createImm(MO.getImm());
+      break;
+    case MachineOperand::MO_MachineBasicBlock:
+      MCOp = MCOperand::createExpr(
+          MCSymbolRefExpr::create(MO.getMBB()->getSymbol(), MO.getMBB()->getParent()->getContext()));
       break;
     }
 
