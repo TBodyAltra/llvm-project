@@ -227,7 +227,10 @@ OperandMatchResultTy TINYGPUAsmParser::parseRegister(OperandVector &Operands) {
     return MatchOperand_NoMatch;
   case AsmToken::Identifier:
     StringRef Name = getLexer().getTok().getIdentifier();
-    unsigned RegNo = MatchRegisterName(Name) || MatchRegisterAltName(Name);
+    unsigned RegNo = MatchRegisterName(Name);
+    unsigned RegAlt = MatchRegisterAltName(Name);
+    RegNo = RegNo == 0 ? RegAlt : RegNo;
+    //unsigned RegNo = MatchRegisterName(Name) || MatchRegisterAltName(Name);
     if (RegNo == 0)
       return MatchOperand_NoMatch;
     getLexer().Lex();
