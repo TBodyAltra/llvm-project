@@ -174,6 +174,16 @@ namespace clang {
   };
   } // namespace LoongArch
 
+  /// TINYGPU builtins
+  namespace TINYGPU {
+  enum {
+    LastTIBuiltin = clang::Builtin::FirstTSBuiltin - 1,
+  #define BUILTIN(ID, TYPE, ATTRS) BI##ID,
+  #include "clang/Basic/BuiltinsTINYGPU.def"
+    LastTSBuiltin
+  };
+  } // namespace TINYGPU
+
   /// Flags to identify the types for overloaded Neon builtins.
   ///
   /// These must be kept in sync with the flags in utils/TableGen/NeonEmitter.h.

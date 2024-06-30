@@ -39,6 +39,7 @@ module Clang_Basic {
   textual header "clang/Basic/AArch64SVEACLETypes.def"
   textual header "clang/Basic/BuiltinsAArch64.def"
   textual header "clang/Basic/BuiltinsAMDGPU.def"
+  textual header "clang/Basic/BuiltinsTINYGPU.def"
   textual header "clang/Basic/BuiltinsAArch64NeonSVEBridge.def"
   textual header "clang/Basic/BuiltinsAArch64NeonSVEBridge_cg.def"
   textual header "clang/Basic/BuiltinsARM.def"

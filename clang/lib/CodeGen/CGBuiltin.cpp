@@ -52,6 +52,7 @@
 #include "llvm/IR/IntrinsicsVE.h"
 #include "llvm/IR/IntrinsicsWebAssembly.h"
 #include "llvm/IR/IntrinsicsX86.h"
+#include "llvm/IR/IntrinsicsTINYGPU.h"
 #include "llvm/IR/MDBuilder.h"
 #include "llvm/IR/MatrixBuilder.h"
 #include "llvm/Support/ConvertUTF.h"
@@ -5591,6 +5592,8 @@ static Value *EmitTargetArchBuiltinExpr(CodeGenFunction *CGF,
   case llvm::Triple::loongarch32:
   case llvm::Triple::loongarch64:
     return CGF->EmitLoongArchBuiltinExpr(BuiltinID, E);
+  case llvm::Triple::tinygpu:
+    return CGF->EmitTINYGPUBuiltinExpr(BuiltinID, E);
   default:
     return nullptr;
   }
@@ -20543,4 +20546,14 @@ Value *CodeGenFunction::EmitLoongArchBuiltinExpr(unsigned BuiltinID,
 
   llvm::Function *F = CGM.getIntrinsic(ID);
   return Builder.CreateCall(F, Ops);
+}
+
+Value *CodeGenFunction::EmitTINYGPUBuiltinExpr(unsigned BuiltinID,
+                                              const CallExpr *E) {
+  switch (BuiltinID) {
+  case TINYGPU::BI__builtin_tinygpu_workitem_id_x:
+    return emitRangedBuiltin(*this, Intrinsic::tinygpu_workitem_id_x, 0, 1024);
+  default:
+    return nullptr;
+  }
 }

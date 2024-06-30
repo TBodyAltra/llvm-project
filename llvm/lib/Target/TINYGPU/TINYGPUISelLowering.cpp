@@ -27,6 +27,8 @@
 #include "llvm/CodeGen/ValueTypes.h"
 #include "llvm/IR/DiagnosticInfo.h"
 #include "llvm/IR/DiagnosticPrinter.h"
+#include "llvm/IR/IntrinsicInst.h"
+#include "llvm/IR/IntrinsicsTINYGPU.h"
 #include "llvm/Support/Debug.h"
 #include "llvm/Support/ErrorHandling.h"
 #include "llvm/Support/raw_ostream.h"
@@ -56,15 +58,41 @@ TINYGPUTargetLowering::TINYGPUTargetLowering(const TargetMachine &TM,
   // TODO: How to determine this for tinygpu?
   setMinFunctionAlignment(Align(2));
   setPrefFunctionAlignment(Align(2));
+
+  setOperationAction(ISD::INTRINSIC_WO_CHAIN, {MVT::Other}, Custom);
 }
 
-SDValue TINYGPUTargetLowering::LowerOperation(SDValue Op,
-                                              SelectionDAG &DAG) const {
+SDValue TINYGPUTargetLowering::LowerOperation(SDValue Op, SelectionDAG &DAG) const {
   switch (Op.getOpcode()) {
   default:
     report_fatal_error("unimplemented operand");
+  case ISD::INTRINSIC_WO_CHAIN:
+    return LowerINTRINSIC_WO_CHAIN(Op, DAG);
   }
 }
+
+SDValue TINYGPUTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op, SelectionDAG &DAG) const {
+  MachineFunction &MF = DAG.getMachineFunction();
+
+  EVT VT = Op.getValueType();
+  SDLoc DL(Op);
+  unsigned IntrinsicID = cast<ConstantSDNode>(Op.getOperand(0))->getZExtValue();
+
+  switch (IntrinsicID) {
+  case Intrinsic::tinygpu_workitem_id_x:
+    return lowerWorkitemID(DAG, Op);
+  default:
+    report_fatal_error("unimplemented intrinsic");
+  }
+}
+
+SDValue TINYGPUTargetLowering::lowerWorkitemID(SelectionDAG &DAG, SDValue Op) const {
+  SDLoc SL(Op);
+  MachineFunction &MF = DAG.getMachineFunction();
+  return DAG.getNode(ISD::CopyFromReg, SL, MVT::i8, Op.getOperand(0),
+                     DAG.getRegister(MCRegister(TINYGPU::R15), MVT::i8));
+}
+
 
 // Calling Convention Implementation.
 #include "TINYGPUGenCallingConv.inc"

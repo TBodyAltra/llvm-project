@@ -38,8 +38,19 @@ TINYGPURegisterInfo::getCalleeSavedRegs(const MachineFunction *MF) const {
 
 BitVector TINYGPURegisterInfo::getReservedRegs(const MachineFunction &MF) const {
   BitVector Reserved(getNumRegs());
+  reserveRegisterTuples(Reserved, TINYGPU::R13); // blockIdx
+  reserveRegisterTuples(Reserved, TINYGPU::R14); // blockDim
+  reserveRegisterTuples(Reserved, TINYGPU::R15); // threadIdx
   return Reserved;
 }
+
+void TINYGPURegisterInfo::reserveRegisterTuples(BitVector &Reserved, unsigned Reg) const {
+  MCRegAliasIterator R(Reg, this, true);
+
+  for (; R.isValid(); ++R)
+    Reserved.set(*R);
+}
+
 
 bool TINYGPURegisterInfo::eliminateFrameIndex(MachineBasicBlock::iterator II,
                                             int SPAdj, unsigned FIOperandNum,

@@ -49,6 +49,10 @@ public:
   /// So always keep the div op for TINYGPU
   bool isIntDivCheap(EVT VT, AttributeList Attr) const override { return true; }
 
+  SDValue LowerINTRINSIC_WO_CHAIN(SDValue Op, SelectionDAG &DAG) const;
+
+  SDValue lowerWorkitemID(SelectionDAG &DAG, SDValue Op) const;
+
 private:
   // Lower incoming arguments, copy physregs into vregs
   SDValue LowerFormalArguments(SDValue Chain, CallingConv::ID CallConv,
