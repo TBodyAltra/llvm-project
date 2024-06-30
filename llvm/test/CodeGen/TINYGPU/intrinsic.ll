@@ -7,8 +7,14 @@ define void @intrinsic(ptr addrspace(1) %a) {
 ; ASM-NEXT:    STR threadIdx, R0
 ; ASM-NEXT:    RET
   %tid = call i8 @llvm.tinygpu.workitem.id.x()
-  store i8 %tid, ptr addrspace(1) %a, align 1
+  %bid = call i8 @llvm.tinygpu.workgroup.id.x()
+  %bdim = call i8 @llvm.tinygpu.workgroup.size.x()
+  %1 = mul i8 %bid, %bdim
+  %2 = add i8 %1, %tid
+  store i8 %2, ptr addrspace(1) %a, align 1
   ret void
 }
 
 declare i8 @llvm.tinygpu.workitem.id.x()
+declare i8 @llvm.tinygpu.workgroup.id.x()
+declare i8 @llvm.tinygpu.workgroup.size.x()

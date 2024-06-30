@@ -81,6 +81,10 @@ SDValue TINYGPUTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op, SelectionDAG 
   switch (IntrinsicID) {
   case Intrinsic::tinygpu_workitem_id_x:
     return lowerWorkitemID(DAG, Op);
+  case Intrinsic::tinygpu_workgroup_id_x:
+    return lowerWorkgroupID(DAG, Op);
+  case Intrinsic::tinygpu_workgroup_size_x:
+    return lowerWorkgroupSize(DAG, Op);
   default:
     report_fatal_error("unimplemented intrinsic");
   }
@@ -93,6 +97,19 @@ SDValue TINYGPUTargetLowering::lowerWorkitemID(SelectionDAG &DAG, SDValue Op) co
                      DAG.getRegister(MCRegister(TINYGPU::R15), MVT::i8));
 }
 
+SDValue TINYGPUTargetLowering::lowerWorkgroupID(SelectionDAG &DAG, SDValue Op) const {
+  SDLoc SL(Op);
+  MachineFunction &MF = DAG.getMachineFunction();
+  return DAG.getNode(ISD::CopyFromReg, SL, MVT::i8, Op.getOperand(0),
+                     DAG.getRegister(MCRegister(TINYGPU::R13), MVT::i8));
+}
+
+SDValue TINYGPUTargetLowering::lowerWorkgroupSize(SelectionDAG &DAG, SDValue Op) const {
+  SDLoc SL(Op);
+  MachineFunction &MF = DAG.getMachineFunction();
+  return DAG.getNode(ISD::CopyFromReg, SL, MVT::i8, Op.getOperand(0),
+                     DAG.getRegister(MCRegister(TINYGPU::R14), MVT::i8));
+}
 
 // Calling Convention Implementation.
 #include "TINYGPUGenCallingConv.inc"

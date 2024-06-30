@@ -12,7 +12,9 @@
 
 class TINYGPUReadPreloadRegisterIntrinsicNamed<string name>
   : DefaultAttrsIntrinsic<[llvm_i8_ty], [], [IntrNoMem, IntrSpeculatable]>, ClangBuiltin<name>;
-  
+
 let TargetPrefix = "tinygpu" in {
 def int_tinygpu_workitem_id_x : TINYGPUReadPreloadRegisterIntrinsicNamed<"__builtin_tinygpu_workitem_id_x">;
+def int_tinygpu_workgroup_id_x : TINYGPUReadPreloadRegisterIntrinsicNamed<"__builtin_tinygpu_workgroup_id_x">;
+def int_tinygpu_workgroup_size_x : TINYGPUReadPreloadRegisterIntrinsicNamed<"__builtin_tinygpu_workgroup_size_x">;
 }

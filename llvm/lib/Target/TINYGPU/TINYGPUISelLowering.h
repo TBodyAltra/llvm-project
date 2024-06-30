@@ -53,6 +53,10 @@ public:
 
   SDValue lowerWorkitemID(SelectionDAG &DAG, SDValue Op) const;
 
+  SDValue lowerWorkgroupID(SelectionDAG &DAG, SDValue Op) const;
+
+  SDValue lowerWorkgroupSize(SelectionDAG &DAG, SDValue Op) const;
+
 private:
   // Lower incoming arguments, copy physregs into vregs
   SDValue LowerFormalArguments(SDValue Chain, CallingConv::ID CallConv,

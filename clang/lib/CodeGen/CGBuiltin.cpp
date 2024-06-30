@@ -20553,6 +20553,10 @@ Value *CodeGenFunction::EmitTINYGPUBuiltinExpr(unsigned BuiltinID,
   switch (BuiltinID) {
   case TINYGPU::BI__builtin_tinygpu_workitem_id_x:
     return emitRangedBuiltin(*this, Intrinsic::tinygpu_workitem_id_x, 0, 1024);
+  case TINYGPU::BI__builtin_tinygpu_workgroup_id_x:
+    return emitRangedBuiltin(*this, Intrinsic::tinygpu_workgroup_id_x, 0, 1024);
+  case TINYGPU::BI__builtin_tinygpu_workgroup_size_x:
+    return emitRangedBuiltin(*this, Intrinsic::tinygpu_workgroup_size_x, 0, 1024);
   default:
     return nullptr;
   }
