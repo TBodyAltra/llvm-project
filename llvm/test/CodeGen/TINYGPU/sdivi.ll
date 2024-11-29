@@ -4,8 +4,6 @@
 define i8 @sdivi1(i8 %a) {
 ; ASM-LABEL: sdivi1:
 ; ASM:       # %bb.0:
-; ASM-NEXT:    CONST R11, 0
-; ASM-NEXT:    ADD R11, R0, R11
 ; ASM-NEXT:    RET
   %1 = sdiv i8 %a, 1
   ret i8 %1
@@ -14,8 +12,8 @@ define i8 @sdivi1(i8 %a) {
 define i8 @sdivi2(i8 %a) {
 ; ASM-LABEL: sdivi2:
 ; ASM:       # %bb.0:
-; ASM-NEXT:    CONST R4, 2
-; ASM-NEXT:    DIV R11, R0, R4
+; ASM-NEXT:    CONST R1, 2
+; ASM-NEXT:    DIV R0, R0, R1
 ; ASM-NEXT:    RET
   %1 = sdiv i8 %a, 2
   ret i8 %1

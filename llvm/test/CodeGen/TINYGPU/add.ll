@@ -4,7 +4,7 @@
 define i8 @add(i8 %a, i8 %b) {
 ; ASM-LABEL: add:
 ; ASM:       # %bb.0:
-; ASM-NEXT:    ADD R11, R0, R1
+; ASM-NEXT:    ADD R0, R0, R1
 ; ASM-NEXT:    RET
   %1 = add i8 %a, %b
   ret i8 %1

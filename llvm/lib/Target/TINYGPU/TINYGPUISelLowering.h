@@ -57,6 +57,14 @@ public:
 
   SDValue lowerWorkgroupSize(SelectionDAG &DAG, SDValue Op) const;
 
+  unsigned encodeIntrinsicID(unsigned Intrinsic) override const {
+    return Intrinsic - Intrinsic::tinygpu_workgroup_id_x;
+  }
+
+  unsigned decodeIntrinsicID(unsigned Intrinsic) override const {
+    return Intrinsic + Intrinsic::tinygpu_workgroup_id_x;
+  }
+
 private:
   // Lower incoming arguments, copy physregs into vregs
   SDValue LowerFormalArguments(SDValue Chain, CallingConv::ID CallConv,

@@ -4,15 +4,15 @@
 define void @matadd(ptr addrspace(1) %A, ptr addrspace(1) %B, ptr addrspace(1) %C) {
 ; ASM-LABEL: matadd:
 ; ASM:       # %bb.0: # %entry
-; ASM-NEXT:    MUL R4, blockIdx, blockDim
-; ASM-NEXT:    ADD R4, R4, threadIdx
-; ASM-NEXT:    ADD R5, R1, R4
-; ASM-NEXT:    LDR R5, R5
-; ASM-NEXT:    ADD R0, R0, R4
+; ASM-NEXT:    MUL R3, blockIdx, blockDim
+; ASM-NEXT:    ADD R3, R3, threadIdx
+; ASM-NEXT:    ADD R1, R1, R3
+; ASM-NEXT:    LDR R1, R1
+; ASM-NEXT:    ADD R0, R0, R3
 ; ASM-NEXT:    LDR R0, R0
-; ASM-NEXT:    ADD R0, R0, R5
-; ASM-NEXT:    ADD R4, R2, R4
-; ASM-NEXT:    STR R0, R4
+; ASM-NEXT:    ADD R0, R0, R1
+; ASM-NEXT:    ADD R1, R2, R3
+; ASM-NEXT:    STR R0, R1
 ; ASM-NEXT:    RET
 entry:
   ; Get blockIdx, blockDim, and threadIdx using built-in functions

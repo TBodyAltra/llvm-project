@@ -4,7 +4,7 @@
 define i8 @const() {
 ; ASM-LABEL: const:
 ; ASM:       # %bb.0:
-; ASM-NEXT:    CONST R11, 2
+; ASM-NEXT:    CONST R0, 2
 ; ASM-NEXT:    RET
   ret i8 2
 }

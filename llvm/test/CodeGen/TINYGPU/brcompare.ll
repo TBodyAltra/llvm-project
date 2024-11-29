@@ -8,10 +8,10 @@ define i8 @brcompare(i8 %a, i8 %b) {
 ; ASM-NEXT:    BRnp .LBB0_2
 ; ASM-NEXT:    BRnzp .LBB0_1
 ; ASM-NEXT:  .LBB0_1: # %if
-; ASM-NEXT:    CONST R11, 0
+; ASM-NEXT:    CONST R0, 0
 ; ASM-NEXT:    RET
 ; ASM-NEXT:  .LBB0_2: # %else
-; ASM-NEXT:    CONST R11, 1
+; ASM-NEXT:    CONST R0, 1
 ; ASM-NEXT:    RET
   %1 = icmp eq i8 %a, %b
   br i1 %1, label %if, label %else

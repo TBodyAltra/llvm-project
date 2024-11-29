@@ -3719,6 +3719,14 @@ public:
       const SmallVectorImpl<CCValAssign> &ArgLocs,
       const SmallVectorImpl<SDValue> &OutVals) const;
 
+  virtual unsigned encodeIntrinsicID(unsigned Intrinsic) {
+    return Intrinsic;
+  }
+
+  virtual unsigned decodeIntrinsicID(unsigned Intrinsic) {
+    return Intrinsic;
+  }
+
   //===--------------------------------------------------------------------===//
   // TargetLowering Optimization Methods
   //

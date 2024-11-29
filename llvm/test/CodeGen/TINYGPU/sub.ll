@@ -4,7 +4,7 @@
 define i8 @sub(i8 %a, i8 %b) {
 ; ASM-LABEL: sub:
 ; ASM:       # %bb.0:
-; ASM-NEXT:    SUB R11, R0, R1
+; ASM-NEXT:    SUB R0, R0, R1
 ; ASM-NEXT:    RET
   %1 = sub i8 %a, %b
   ret i8 %1

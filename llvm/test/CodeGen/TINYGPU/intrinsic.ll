@@ -4,9 +4,9 @@
 define void @intrinsic(ptr addrspace(1) %a) {
 ; ASM-LABEL: intrinsic:
 ; ASM:       # %bb.0:
-; ASM-NEXT:    MUL R4, blockIdx, blockDim
-; ASM-NEXT:    ADD R4, R4, threadIdx
-; ASM-NEXT:    STR R4, R0
+; ASM-NEXT:    MUL R1, blockIdx, blockDim
+; ASM-NEXT:    ADD R1, R1, threadIdx
+; ASM-NEXT:    STR R1, R0
 ; ASM-NEXT:    RET
   %tid = call i8 @llvm.tinygpu.workitem.id.x()
   %bid = call i8 @llvm.tinygpu.workgroup.id.x()

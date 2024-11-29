@@ -4,7 +4,7 @@
 define i8 @mul(i8 %a, i8 %b) {
 ; ASM-LABEL: mul:
 ; ASM:       # %bb.0:
-; ASM-NEXT:    MUL R11, R0, R1
+; ASM-NEXT:    MUL R0, R0, R1
 ; ASM-NEXT:    RET
   %1 = mul i8 %a, %b
   ret i8 %1

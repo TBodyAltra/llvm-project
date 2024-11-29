@@ -4911,9 +4911,12 @@ void SelectionDAGBuilder::visitTargetIntrinsic(const CallInst &I,
 
   // Add the intrinsic ID as an integer operand if it's not a target intrinsic.
   if (!IsTgtIntrinsic || Info.opc == ISD::INTRINSIC_VOID ||
-      Info.opc == ISD::INTRINSIC_W_CHAIN)
+      Info.opc == ISD::INTRINSIC_W_CHAIN) {
+    const TargetLowering *TL = DAG.getSubtarget().getTargetLowering();
+    Intrinsic = TL->encodeIntrinsic(Intrinsic);
     Ops.push_back(DAG.getTargetConstant(Intrinsic, getCurSDLoc(),
                                         TLI.getPointerTy(DAG.getDataLayout())));
+    }
 
   // Add all operands of the call to the operand list.
   for (unsigned i = 0, e = I.arg_size(); i != e; ++i) {
@@ -5941,6 +5944,7 @@ static const CallBase *FindPreallocatedCall(const Value *PreallocatedSetup) {
 void SelectionDAGBuilder::visitIntrinsicCall(const CallInst &I,
                                              unsigned Intrinsic) {
   const TargetLowering &TLI = DAG.getTargetLoweringInfo();
+  Intrinsic = TLI.encodeIntrinsicID(Intrinsic);
   SDLoc sdl = getCurSDLoc();
   DebugLoc dl = getCurDebugLoc();
   SDValue Res;

@@ -4,7 +4,7 @@
 define i8 @sdiv(i8 %a, i8 %b) {
 ; ASM-LABEL: sdiv:
 ; ASM:       # %bb.0:
-; ASM-NEXT:    DIV R11, R0, R1
+; ASM-NEXT:    DIV R0, R0, R1
 ; ASM-NEXT:    RET
   %1 = sdiv i8 %a, %b
   ret i8 %1

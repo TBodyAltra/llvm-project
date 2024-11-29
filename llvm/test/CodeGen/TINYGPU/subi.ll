@@ -4,8 +4,8 @@
 define i8 @subi(i8 %a) {
 ; ASM-LABEL: subi:
 ; ASM:       # %bb.0:
-; ASM-NEXT:    CONST R4, -1
-; ASM-NEXT:    ADD R11, R0, R4
+; ASM-NEXT:    CONST R1, -1
+; ASM-NEXT:    ADD R0, R0, R1
 ; ASM-NEXT:    RET
   %1 = sub i8 %a, 1
   ret i8 %1

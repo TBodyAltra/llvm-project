@@ -27,7 +27,7 @@ extern "C" void LLVMInitializeTINYGPUTarget() {
 }
 
 static std::string computeDataLayout(const Triple &TT) {
-  return "e-m:e-p:32:32-p1:8:8-i8:8-i16:16-n8:8";
+  return "e-m:e-p:8:8-p1:8:8-i8:8-n8:8";
 }
 
 static Reloc::Model getEffectiveRelocModel(const Triple &TT,
